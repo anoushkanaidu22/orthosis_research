@@ -118,4 +118,4 @@ def track_yellow_object(video_path):
    print(f"Maximum displacement: {max_displacement:.2f} mm at frame {max_frame}")
    return max_frame
 
-print(track_yellow_object("videos/yellow_spring1.mp4"))
+print(track_yellow_object("videos/yellow_spring2.mp4"))
