@@ -1,6 +1,26 @@
 import cv2
 import numpy as np
 
+def get_color_range():
+    print("Select color to track:")
+    print("1: Yellow")
+    print("2: Silver/White")
+    print("3: Black")
+    choice = input("Enter number (1-3): ")
+    
+    if choice == '1':
+        #yellow
+        return np.array([20, 100, 100]), np.array([30, 255, 255])
+    elif choice == '2':
+        #silver/white (high value, low saturation)
+        return np.array([0, 0, 150]), np.array([180, 30, 255])
+    elif choice == '3':
+        #black (low value)
+        return np.array([0, 0, 0]), np.array([360, 255, 50])
+    else:
+        print("Invalid choice, defaulting to yellow")
+        return np.array([20, 100, 100]), np.array([30, 255, 255])
+
 def track_yellow_object(video_path):
    #create video capture object to read video
    cap = cv2.VideoCapture(video_path)
@@ -51,11 +71,13 @@ def track_yellow_object(video_path):
    #convert frame to hsv color space for better color detection
    hsv = cv2.cvtColor(first_frame, cv2.COLOR_BGR2HSV)
    #define range of yellow color in hsv
-   yellow_lower = np.array([20, 100, 100])
-   yellow_upper = np.array([30, 255, 255])
+#   yellow_lower = np.array([20, 100, 100])
+#   yellow_upper = np.array([30, 255, 255])
+
+   color_lower, color_upper = get_color_range()
    
    #create binary mask of yellow pixels
-   initial_mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+   initial_mask = cv2.inRange(hsv, color_lower, color_upper)
    #calculate center of mass of yellow object
    initial_position = cv2.moments(initial_mask)
    
@@ -76,7 +98,7 @@ def track_yellow_object(video_path):
            
        #convert frame to hsv and create yellow mask
        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-       mask = cv2.inRange(hsv, yellow_lower, yellow_upper)
+       mask = cv2.inRange(hsv, color_lower, color_upper)
        
        #find center of yellow object in current frame
        M = cv2.moments(mask)
@@ -118,4 +140,4 @@ def track_yellow_object(video_path):
    print(f"Maximum displacement: {max_displacement:.2f} mm at frame {max_frame}")
    return max_frame
 
-print(track_yellow_object("videos/yellow_spring2.mp4"))
+print(track_yellow_object("videos/black_spring_active.mp4"))
